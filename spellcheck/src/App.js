@@ -12,24 +12,27 @@ function App() {
   const [text, setText] = useState("");
   const [suggestedText, setSuggestedText] = useState("");
 
+  useEffect(() => {
+    const words = text.split(" ");
+
+    let firstCorrection = "";
+
+    words.some((word) => {
+      const correctedWord = customDictionary[word.toLowerCase()];
+      if (correctedWord && correctedWord !== word) {
+        firstCorrection = correctedWord;
+        return true;
+      }
+      return false;
+    });
+
+    setSuggestedText(firstCorrection);
+  }, [text]);
+
   const handleInputChange = (e) => {
     const inputText = e.target.value;
     setText(inputText);
   };
-
-  useEffect(() => {
-    const words = text.split(" ");
-    const correctedWords = words.map((word) => {
-      const correctedWord = customDictionary[word.toLowerCase()];
-      return correctedWord || word;
-    });
-
-    const firstCorrection = correctedWords.find(
-      (word, idx) => word !== words[idx]
-    );
-
-    setSuggestedText(firstCorrection || "");
-  }, [text]); // Run this effect whenever 'text' changes
 
   return (
     <div>
@@ -42,7 +45,7 @@ function App() {
         cols={40}
       />
       {suggestedText && (
-        <p>Did you mean: <strong>{suggestedText}</strong></p>
+        <p>Did you mean: <strong>{suggestedText}</strong>?</p>
       )}
     </div>
   );
